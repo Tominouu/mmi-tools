@@ -1,18 +1,20 @@
 // Données des tutoriels
 const tutoriels = [
     {
-        titre: 'Introduction au HTML5',
-        description: 'Apprenez les bases du HTML5 et les bonnes pratiques',
-        categorie: 'web'
+        titre: 'Générateur de Qr Code à durée illimité',
+        description: 'Générez des codes QR personnalisés avec des liens',
+        categorie: 'web',
+        lien: 'https://qrmmi.netlify.app',
     },
     {
-        titre: 'CSS Moderne',
-        description: 'Maîtrisez Flexbox, Grid et les animations CSS',
-        categorie: 'web'
+        titre: "Convertisseur/Compresseur d'image en format webp",
+        description: 'Convertissez des images en format webp pour une compression optimale',
+        categorie: 'web',
+        lien: 'https://mmi-webp.netlify.app',
     },
     {
-        titre: 'JavaScript Fondamentaux',
-        description: 'Les concepts essentiels de JavaScript',
+        titre: 'Bientôt disponible',
+        description: 'Bientôt disponible',
         categorie: 'web'
     }
 ];
@@ -45,6 +47,7 @@ function chargerTutoriels() {
         card.innerHTML = `
             <h3>${tuto.titre}</h3>
             <p>${tuto.description}</p>
+            <a href="${tuto.lien}" target="_blank" rel="noopener noreferrer">En savoir plus</a>
         `;
         container.appendChild(card);
     });
