@@ -100,10 +100,30 @@ function animerCartes() {
     });
 }
 
+// Gestion du menu mobile
+function gererMenuMobile() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const liens = document.querySelectorAll('.nav-links a');
+
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+
+    liens.forEach(lien => {
+        lien.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+        });
+    });
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     chargerTutoriels();
     chargerOutils();
     gererScroll();
     animerCartes();
+    gererMenuMobile();
 });
