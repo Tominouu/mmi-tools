@@ -184,6 +184,18 @@ main {
     width: 100%;
     height: 200px;
     background: var(--surface);
+    overflow: hidden;
+}
+
+.article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.article-image:hover img {
+    transform: scale(1.05);
 }
 
 .image-placeholder {
@@ -261,6 +273,16 @@ main {
 
 .article-header {
     margin-bottom: var(--spacing);
+    width: 100%;
+    overflow: hidden;
+}
+
+.featured-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--radius);
 }
 
 .article-info {
@@ -279,6 +301,32 @@ main {
     line-height: 1.8;
     color: var(--text);
     margin-bottom: var(--spacing);
+}
+
+.article-image-content {
+    margin: 2rem 0;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius);
+}
+
+.content-image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.article-image-content:hover .content-image {
+    transform: scale(1.02);
+}
+
+.image-caption {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
 }
 
 .article-content-full p {
@@ -314,6 +362,58 @@ main {
     margin-top: var(--spacing);
 }
 
+.auteur a {
+    color: black;
+}
+
+.code-example {
+    margin: 2rem 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.bad-practice,
+.good-practice {
+    padding: 1.5rem;
+    background: var(--surface);
+    margin-bottom: 1rem;
+}
+
+.code-example h4 {
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.code-example pre {
+    background: #1a1a1a;
+    padding: 1rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    color: #ffffff;
+}
+
+.code-example code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .code-example {
+        margin: 1.5rem -1rem;
+        border-radius: 0;
+    }
+
+    .bad-practice,
+    .good-practice {
+        padding: 1rem;
+    }
+
+    .code-example pre {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+}
 @media (max-width: 768px) {
     :root {
         --spacing: 1rem;
