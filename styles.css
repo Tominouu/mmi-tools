@@ -366,6 +366,10 @@ main {
     color: black;
 }
 
+a {
+    color: black;
+}
+
 .code-example {
     margin: 2rem 0;
     border-radius: var(--radius);
