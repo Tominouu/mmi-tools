@@ -124,9 +124,18 @@ function gererMenuMobile() {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
-    chargerTutoriels();
-    chargerOutils();
+    // Vérifier si les éléments sont présents avant d'initialiser les fonctions
+    if (document.querySelector('#tutoriels')) {
+        chargerTutoriels();
+    }
+    if (document.querySelector('#outils')) {
+        chargerOutils();
+    }
+    // Ces fonctions sont communes à toutes les pages
     gererScroll();
-    animerCartes();
     gererMenuMobile();
+    // Animer les cartes seulement si elles existent
+    if (document.querySelectorAll('.card').length > 0) {
+        animerCartes();
+    }
 });
