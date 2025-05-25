@@ -1,6 +1,9 @@
 backend:
-  name: git-gateway
-  branch: main # ou "master" selon ton repo
+    name: auth0
+    domain: "dev-a6726440saqib07l.us.auth0.com"   # remplace par ton Domain Auth0 complet
+    client_id: "Qs58KQYe6gSPzfMIYnA6UAojOPXDrr4V"       # remplace par ton Client ID Auth0
+    auth_url: "https://dev-a6726440saqib07l.us.auth0.com/authorize"
+    scope: "openid profile email"
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
