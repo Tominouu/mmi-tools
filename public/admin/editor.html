@@ -1,21 +1,106 @@
-<!-- public/admin/editor.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Éditeur d'articles</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Éditeur d'article - MMI Tools</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .block { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9; }
+    .controls { margin-top: 5px; }
+    .controls button { margin-right: 5px; }
+    #preview { white-space: pre-wrap; background: #eee; padding: 1em; }
+  </style>
 </head>
 <body>
+  <header class="header">
+    <h1 style="text-align: center;">🛠️ Éditeur MMI Tools</h1>
+  </header>
+
+  <main style="max-width: 800px; margin: auto;">
+    <div id="editor"></div>
+
+    <div style="margin: 20px 0;">
+      <button onclick="addBlock('title')">+ Titre</button>
+      <button onclick="addBlock('subtitle')">+ Sous-titre</button>
+      <button onclick="addBlock('paragraph')">+ Paragraphe</button>
+      <button onclick="addBlock('image')">+ Image</button>
+      <button onclick="addBlock('line')">+ Saut de ligne</button>
+    </div>
+
+    <button onclick="generateHTML()">🧾 Générer HTML</button>
+
+    <h2>🔍 Aperçu HTML</h2>
+    <div id="preview"></div>
+  </main>
+
   <script>
     // Protection : redirige vers /login si pas connecté
     if (localStorage.getItem("isAuth") !== "true") {
       window.location.href = "/public/login.html";
     }
+    const editor = document.getElementById('editor');
+    function addBlock(type) {
+      const block = document.createElement('div');
+      block.className = 'block';
+      block.dataset.type = type;
+
+      if (type === 'title') block.innerHTML = `<h2>Titre :</h2><input type="text" />`;
+      if (type === 'subtitle') block.innerHTML = `<h3>Sous-titre :</h3><input type="text" />`;
+      if (type === 'paragraph') block.innerHTML = `<h3>Paragraphe :</h3><textarea rows="4"></textarea>`;
+      if (type === 'image') block.innerHTML = `
+        <h3>Image :</h3>
+        <input type="text" placeholder="Lien image (assets/img/...)" />
+        <input type="text" placeholder="Légende" />
+      `;
+      if (type === 'line') block.innerHTML = `<p><em>Saut de ligne</em></p>`;
+
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      controls.innerHTML = `
+        <button onclick="moveBlock(this.parentNode.parentNode, -1)">⬆️</button>
+        <button onclick="moveBlock(this.parentNode.parentNode, 1)">⬇️</button>
+        <button onclick="this.parentNode.parentNode.remove()">🗑️ Supprimer</button>
+      `;
+      block.appendChild(controls);
+      editor.appendChild(block);
+    }
+
+    function moveBlock(block, direction) {
+      const sibling = direction === -1 ? block.previousElementSibling : block.nextElementSibling;
+      if (sibling) {
+        block.parentNode.insertBefore(block, direction === -1 ? sibling : sibling.nextElementSibling);
+      }
+    }
+
+    function generateHTML() {
+      let html = '';
+      [...editor.children].forEach(block => {
+        const type = block.dataset.type;
+        if (type === 'title') {
+          const text = block.querySelector('input').value;
+          html += `<h2>${text}</h2>\n`;
+        }
+        if (type === 'subtitle') {
+          const text = block.querySelector('input').value;
+          html += `<h3>${text}</h3>\n`;
+        }
+        if (type === 'paragraph') {
+          const text = block.querySelector('textarea').value;
+          html += `<p>${text}</p>\n`;
+        }
+        if (type === 'image') {
+          const url = block.querySelectorAll('input')[0].value;
+          const caption = block.querySelectorAll('input')[1].value;
+          html += `<div class="article-image-content">\n  <img src="${url}" class="content-image" />\n  <p class="image-caption">${caption}</p>\n</div>\n`;
+        }
+        if (type === 'line') {
+          html += `<br>\n`;
+        }
+      });
+      document.getElementById('preview').textContent = html;
+    }
   </script>
-
-  <h1>Bienvenue dans l'Éditeur d'Articles</h1>
-  <p>Ici tu pourras ajouter tes blocs plus tard (titre, image, paragraphe, etc).</p>
-
-  <!-- Ajoute ton éditeur ici -->
 </body>
 </html>
+
