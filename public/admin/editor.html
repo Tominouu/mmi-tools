@@ -31,17 +31,17 @@
     <button onclick="generateHTML()">🧾 Générer HTML</button>
     <button onclick="saveArticle()">Publier</button>
 
-
     <h2>🔍 Aperçu HTML</h2>
     <div id="preview"></div>
   </main>
 
   <script>
-    // Protection : redirige vers /login si pas connecté
     if (localStorage.getItem("isAuth") !== "true") {
       window.location.href = "/public/login.html";
     }
+
     const editor = document.getElementById('editor');
+
     function addBlock(type) {
       const block = document.createElement('div');
       block.className = 'block';
@@ -52,8 +52,9 @@
       if (type === 'paragraph') block.innerHTML = `<h3>Paragraphe :</h3><textarea rows="4"></textarea>`;
       if (type === 'image') block.innerHTML = `
         <h3>Image :</h3>
-        <input type="text" placeholder="Lien image (assets/img/...)" />
+        <input type="file" accept="image/*" />
         <input type="text" placeholder="Légende" />
+        <input type="hidden" />
       `;
       if (type === 'line') block.innerHTML = `<p><em>Saut de ligne</em></p>`;
 
@@ -92,7 +93,7 @@
           html += `<p>${text}</p>\n`;
         }
         if (type === 'image') {
-          const url = block.querySelectorAll('input')[0].value;
+          const url = block.querySelector('input[type="hidden"]').value || '';
           const caption = block.querySelectorAll('input')[1].value;
           html += `<div class="article-image-content">\n  <img src="${url}" class="content-image" />\n  <p class="image-caption">${caption}</p>\n</div>\n`;
         }
@@ -102,49 +103,79 @@
       });
       document.getElementById('preview').textContent = html;
     }
-        async function saveArticle() {
-        const blocks = [...editor.children];
-    const titleBlock = blocks.find(b => b.dataset.type === 'title');
-    const title = titleBlock ? titleBlock.querySelector('input').value : 'Sans titre';
 
-    // Re-génère le HTML final à partir des blocs
-    let content = '';
-    blocks.forEach(block => {
-    const type = block.dataset.type;
-    if (type === 'title') {
-        const text = block.querySelector('input').value;
-        content += `<h2>${text}</h2>\n`;
-    } else if (type === 'subtitle') {
-        const text = block.querySelector('input').value;
-        content += `<h3>${text}</h3>\n`;
-    } else if (type === 'paragraph') {
-        const text = block.querySelector('textarea').value;
-        content += `<p>${text}</p>\n`;
-    } else if (type === 'image') {
-        const url = block.querySelectorAll('input')[0].value;
-        const caption = block.querySelectorAll('input')[1].value;
-        content += `<div class="article-image-content">\n  <img src="${url}" class="content-image" />\n  <p class="image-caption">${caption}</p>\n</div>\n`;
-    } else if (type === 'line') {
-        content += `<br>\n`;
-    }
-    });
+    async function saveArticle() {
+      const blocks = [...editor.children];
+      const titleBlock = blocks.find(b => b.dataset.type === 'title');
+      const title = titleBlock ? titleBlock.querySelector('input').value : 'Sans titre';
 
-    const date = new Date().toLocaleDateString('fr-FR');
-    const filename = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+      const filename = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+      const date = new Date().toLocaleDateString('fr-FR');
 
-    const res = await fetch('/.netlify/functions/save-article', {
+      const imageUploads = [];
+
+      let content = '';
+      for (const block of blocks) {
+        const type = block.dataset.type;
+        if (type === 'title') {
+          const text = block.querySelector('input').value;
+          content += `<h2>${text}</h2>\n`;
+        } else if (type === 'subtitle') {
+          const text = block.querySelector('input').value;
+          content += `<h3>${text}</h3>\n`;
+        } else if (type === 'paragraph') {
+          const text = block.querySelector('textarea').value;
+          content += `<p>${text}</p>\n`;
+        } else if (type === 'image') {
+          const fileInput = block.querySelector('input[type="file"]');
+          const caption = block.querySelectorAll('input')[1].value;
+          const hiddenInput = block.querySelector('input[type="hidden"]');
+
+          if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const reader = await readFileAsBase64(file);
+            const imagePath = `assets/img/${file.name}`;
+
+            imageUploads.push({
+              name: file.name,
+              content: reader.split(',')[1],
+            });
+
+            hiddenInput.value = imagePath;
+            content += `<div class="article-image-content">\n  <img src="${imagePath}" class="content-image" />\n  <p class="image-caption">${caption}</p>\n</div>\n`;
+          } else {
+            const imagePath = hiddenInput.value;
+            content += `<div class="article-image-content">\n  <img src="${imagePath}" class="content-image" />\n  <p class="image-caption">${caption}</p>\n</div>\n`;
+          }
+        } else if (type === 'line') {
+          content += `<br>\n`;
+        }
+      }
+
+      const res = await fetch('/.netlify/functions/save-article', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, date, filename }),
-    });
+        body: JSON.stringify({
+          title,
+          content,
+          date,
+          filename,
+          images: imageUploads,
+        }),
+      });
 
-    const data = await res.json();
-    alert(data.message || 'Erreur lors de la sauvegarde.');
+      const data = await res.json();
+      alert(data.message || 'Erreur lors de la sauvegarde.');
     }
 
-
-
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
   </script>
 </body>
 </html>
-
