@@ -1,0 +1,21 @@
+<!-- public/admin/editor.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Éditeur d'articles</title>
+</head>
+<body>
+  <script>
+    // Protection : redirige vers /login si pas connecté
+    if (localStorage.getItem("isAuth") !== "true") {
+      window.location.href = "/login.html";
+    }
+  </script>
+
+  <h1>Bienvenue dans l'Éditeur d'Articles</h1>
+  <p>Ici tu pourras ajouter tes blocs plus tard (titre, image, paragraphe, etc).</p>
+
+  <!-- Ajoute ton éditeur ici -->
+</body>
+</html>
