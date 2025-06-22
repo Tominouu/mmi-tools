@@ -38,9 +38,9 @@
 
   <script>
     // Protection : redirige vers /login si pas connecté
-    //if (localStorage.getItem("isAuth") !== "true") {
-      //window.location.href = "/public/login.html";
-    //}
+    if (localStorage.getItem("isAuth") !== "true") {
+      window.location.href = "/public/login.html";
+    }
     const editor = document.getElementById('editor');
     function addBlock(type) {
       const block = document.createElement('div');
