@@ -103,8 +103,32 @@
       document.getElementById('preview').textContent = html;
     }
         async function saveArticle() {
-    const title = document.querySelector('#title').value;
-    const content = document.querySelector('#content').value;
+        const blocks = [...editor.children];
+    const titleBlock = blocks.find(b => b.dataset.type === 'title');
+    const title = titleBlock ? titleBlock.querySelector('input').value : 'Sans titre';
+
+    // Re-génère le HTML final à partir des blocs
+    let content = '';
+    blocks.forEach(block => {
+    const type = block.dataset.type;
+    if (type === 'title') {
+        const text = block.querySelector('input').value;
+        content += `<h2>${text}</h2>\n`;
+    } else if (type === 'subtitle') {
+        const text = block.querySelector('input').value;
+        content += `<h3>${text}</h3>\n`;
+    } else if (type === 'paragraph') {
+        const text = block.querySelector('textarea').value;
+        content += `<p>${text}</p>\n`;
+    } else if (type === 'image') {
+        const url = block.querySelectorAll('input')[0].value;
+        const caption = block.querySelectorAll('input')[1].value;
+        content += `<div class="article-image-content">\n  <img src="${url}" class="content-image" />\n  <p class="image-caption">${caption}</p>\n</div>\n`;
+    } else if (type === 'line') {
+        content += `<br>\n`;
+    }
+    });
+
     const date = new Date().toLocaleDateString('fr-FR');
     const filename = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
 
