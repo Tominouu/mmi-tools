@@ -29,6 +29,8 @@
     </div>
 
     <button onclick="generateHTML()">🧾 Générer HTML</button>
+    <button onclick="saveArticle()">Publier</button>
+
 
     <h2>🔍 Aperçu HTML</h2>
     <div id="preview"></div>
@@ -36,9 +38,9 @@
 
   <script>
     // Protection : redirige vers /login si pas connecté
-    if (localStorage.getItem("isAuth") !== "true") {
-      window.location.href = "/public/login.html";
-    }
+    //if (localStorage.getItem("isAuth") !== "true") {
+      //window.location.href = "/public/login.html";
+    //}
     const editor = document.getElementById('editor');
     function addBlock(type) {
       const block = document.createElement('div');
@@ -100,6 +102,24 @@
       });
       document.getElementById('preview').textContent = html;
     }
+        async function saveArticle() {
+    const title = document.querySelector('#title').value;
+    const content = document.querySelector('#content').value;
+    const date = new Date().toLocaleDateString('fr-FR');
+    const filename = title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+
+    const res = await fetch('/.netlify/functions/save-article', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content, date, filename }),
+    });
+
+    const data = await res.json();
+    alert(data.message || 'Erreur lors de la sauvegarde.');
+    }
+
+
+
   </script>
 </body>
 </html>
