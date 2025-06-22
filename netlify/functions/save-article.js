@@ -13,13 +13,30 @@ exports.handler = async (event) => {
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPO;
   const owner = process.env.GITHUB_OWNER;
-  const path = `articles/${filename}.html`;
+  const path = `/${filename}.html`;
 
   const htmlTemplate = `
     <!DOCTYPE html>
     <html lang="fr">
-    <head><meta charset="UTF-8"><title>${title}</title></head>
-    <body><h1>${title}</h1><p>${date}</p><div>${content}</div></body>
+    <head><meta charset="UTF-8"><title>${title}</title><title>Article - MMI Tools</title><link rel="stylesheet" href="/styles.css"></head>
+    <body>
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">MMI Tools</a>
+            <ul class="nav-links">
+                <li><a href="dev-web.html">Développement Web</a></li>
+                <li><a href="design.html">Design</a></li>
+                <li><a href="audiovisuel.html">Audiovisuel</a></li>
+            </ul>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+    <div>${content}</div>
+    </body>
     </html>
   `;
 
