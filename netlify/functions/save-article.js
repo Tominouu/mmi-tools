@@ -8,13 +8,44 @@ exports.handler = async (event) => {
     };
   }
 
-  const { title, content, date, category, readingTime, filename, featuredImage } = JSON.parse(event.body);
+  const {
+    title,
+    content,
+    date,
+    category,
+    readingTime,
+    filename,
+    featuredImage,
+    images = [],
+  } = JSON.parse(event.body);
 
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPO;
   const owner = process.env.GITHUB_OWNER;
-  const path = `${filename}.html`;
 
+  const octokit = new Octokit({ auth: token });
+
+  // 1. Upload des images dans assets/img/
+  for (const image of images) {
+    const imagePath = `assets/img/${image.name}`;
+
+    try {
+      await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
+        owner,
+        repo,
+        path: imagePath,
+        message: `Ajout image "${image.name}" pour l'article "${title}"`,
+        content: image.content,
+      });
+    } catch (err) {
+      return {
+        statusCode: 500,
+        body: `Erreur lors de l'upload de l'image ${image.name} : ${err.message}`,
+      };
+    }
+  }
+
+  // 2. Génération de la page HTML
   const htmlTemplate = `
     <!DOCTYPE html>
     <html lang="fr">
@@ -49,7 +80,7 @@ exports.handler = async (event) => {
               <h1>${title}</h1>
               <div class="article-meta">
                 <span><i class="far fa-calendar"></i> ${date}</span>
-                <span><i class="far fa-folder"></i> ${category}</span>
+                <span><i class="far fa-folder"></i> ${category || "Non classé"}</span>
                 <span><i class="far fa-clock"></i> ${readingTime || '5 min de lecture'}</span>
               </div>
             </div>
@@ -75,25 +106,24 @@ exports.handler = async (event) => {
     </html>
   `;
 
-  const octokit = new Octokit({ auth: token });
-
+  // 3. Upload de l'article HTML
   try {
     await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
       owner,
       repo,
-      path,
+      path: `${filename}.html`,
       message: `Ajout automatique de l'article "${title}"`,
       content: Buffer.from(htmlTemplate).toString("base64"),
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "Article créé avec succès !" }),
+      body: JSON.stringify({ message: "Article et images publiés avec succès !" }),
     };
   } catch (err) {
     return {
       statusCode: 500,
-      body: `Erreur : ${err.message}`,
+      body: `Erreur lors de la création de l'article : ${err.message}`,
     };
   }
 };
