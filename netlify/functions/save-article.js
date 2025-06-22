@@ -13,7 +13,7 @@ exports.handler = async (event) => {
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPO;
   const owner = process.env.GITHUB_OWNER;
-  const path = `/${filename}.html`;
+  const path = `${filename}.html`;
 
   const htmlTemplate = `
     <!DOCTYPE html>
