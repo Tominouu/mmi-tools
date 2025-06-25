@@ -75,7 +75,6 @@ exports.handler = async (event) => {
       <main>
         <article class="article-page">
           <div class="article-header">
-            <img src="${featuredImage || 'assets/img/default.jpg'}" alt="${title}" class="featured-image">
             <div class="article-info">
               <h1>${title}</h1>
               <div class="article-meta">
